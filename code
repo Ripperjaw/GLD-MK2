@@ -1,0 +1,78 @@
+#include <Wire.h> 
+#include <LiquidCrystal_I2C.h>
+#include <SoftwareSerial.h>
+SoftwareSerial mySerial(10, 11); 
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+int mq=A0;
+int gas;
+const int buzzerpin=12;
+int greenled=5;
+int redled=6;
+void setup()
+{
+  pinMode(A0,INPUT);
+  pinMode(buzzerpin, OUTPUT);
+  pinMode(greenled, OUTPUT);
+  pinMode(redled, OUTPUT);
+  Serial.begin(9600);
+  lcd.begin();
+  lcd.backlight();
+  lcd.print("TEAM 2 Presents");
+  delay(2000);
+  lcd.clear();
+  lcd.setCursor(4,0);
+  lcd.print("GLD 2.0"); 
+  
+}
+
+void loop()
+{
+  gas=analogRead(A0);
+  Serial.println(gas);
+  delay(500);
+
+  digitalWrite(greenled, HIGH); 
+
+  if (gas >= 300)
+     
+       
+  {
+    Serial.write(mySerial.read());
+     Serial.begin(9600);
+  //gsm p strt
+  Serial.println("Calling through GSM Modem");
+
+  // set the data rate for the SoftwareSerial port
+  mySerial.begin(9600);
+  delay(2000);
+  mySerial.println("ATD9747325284;"); // ATD81290255XX; -- watch out here for semicolon at the end!!
+
+  Serial.println("Called ATD9747325284");
+
+  
+    digitalWrite(greenled, LOW);
+    digitalWrite(redled, HIGH);
+    tone(buzzerpin,450);
+    delay(500);
+    
+    noTone(buzzerpin);
+    digitalWrite(redled, LOW);
+    delay(500);
+    
+    Serial.println("-------ODIKOOOOO GAS LEAK AAAYI----------");
+    lcd.clear();
+    lcd.setCursor(5,0);
+    lcd.print("DANGER..");
+    lcd.setCursor(1,1);
+    lcd.print("GAS LEAKING...");
+  }
+  else 
+  {
+    noTone(buzzerpin);
+    digitalWrite(redled, LOW);
+    lcd.clear();
+    lcd.setCursor(4,0); 
+    lcd.print("GLD 2.0"); 
+    Serial.println("-----NO TIME TO DIE-----");
+  }
+}
